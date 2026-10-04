@@ -10,11 +10,24 @@ export const AppProvider = ({ children }) => {
 
     const navigate = useNavigate();
 
-    const [token, useToken] = useState(null);   // for user auth
-    const [blog, useBlog] = useState([]);   // to store all blogs data
-    const [input, useInput] = useState(""); // to filter blogs
+    const [token, setToken] = useState(null);   // for user auth
+    const [blogs, setBlogs] = useState([]);   // to store all blogs data
+    const [input, setInput] = useState(""); // to filter blogs
 
-    const value = {axios, navigate, token, useToken, blog, useBlog, input, useInput};
+    const fetchBlogs = async() => {
+        try{
+            const {data} = await axios.get('/api/blog/all');
+            data.success ? setBlogs(data.blogs) : toast.error(data.message);
+        }catch(error){
+            toast.error(error.message);
+        }
+    }
+
+    useEffect(()=>{
+        fetchBlogs();
+    }, [])
+
+    const value = {axios, navigate, token, setToken, blogs, setBlogs, input, setInput};
     return (
         <AppContext.Provider value={value}>
             { children }
